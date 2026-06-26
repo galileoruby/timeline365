@@ -18,6 +18,21 @@ html {
 }
 
 body {
+  --tl-ink: #132238;
+  --tl-muted: #4d5d72;
+  --tl-bg: #f5f1e8;
+  --tl-surface: #fffdf7;
+  --tl-line: #d8c8a5;
+  --tl-accent: #1f6c5d;
+  --tl-accent-soft: #e6f1ee;
+  --tl-shadow: 0 14px 40px rgba(19, 34, 56, 0.1);
+
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(31, 108, 93, 0.15), transparent 32%),
+    radial-gradient(circle at 90% 100%, rgba(181, 131, 55, 0.12), transparent 28%),
+    var(--tl-bg);
+  color: var(--tl-ink);
   margin-bottom: 60px;
 }
 
@@ -28,4 +43,205 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+.navbar-brand {
+  font-family: "Trebuchet MS", "Gill Sans", "Segoe UI", sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.timeline-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.tl-hero {
+  background: linear-gradient(120deg, #fffdf7, #f4efe1);
+  border: 1px solid var(--tl-line);
+  border-radius: 20px;
+  box-shadow: var(--tl-shadow);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.tl-hero h1 {
+  margin-bottom: 0.35rem;
+}
+
+.tl-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--tl-accent);
+  margin-bottom: 0.3rem;
+}
+
+.tl-filter-panel {
+  background: var(--tl-surface);
+  border: 1px solid var(--tl-line);
+  border-radius: 14px;
+  box-shadow: var(--tl-shadow);
+  overflow: hidden;
+}
+
+.tl-filter-panel summary {
+  cursor: pointer;
+  padding: 0.9rem 1rem;
+  background: var(--tl-accent-soft);
+  font-family: "Trebuchet MS", "Gill Sans", "Segoe UI", sans-serif;
+  font-weight: 700;
+}
+
+.tl-filter-form {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem;
+}
+
+.tl-filter-form label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--tl-muted);
+}
+
+.tl-filter-form select {
+  width: 100%;
+  min-height: 2.75rem;
+  border-radius: 10px;
+  border: 1px solid #c7b89a;
+  padding: 0.4rem 0.75rem;
+  background: #fff;
+}
+
+.tl-filter-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.tl-filter-actions .btn {
+  min-height: 2.75rem;
+}
+
+.tl-content {
+  display: grid;
+  gap: 1rem;
+}
+
+.tl-result-count {
+  color: var(--tl-muted);
+  margin: 0;
+}
+
+.tl-year {
+  border-left: 4px solid var(--tl-accent);
+  padding-left: 0.8rem;
+}
+
+.tl-year header {
+  position: sticky;
+  top: 0;
+  background: linear-gradient(90deg, rgba(245, 241, 232, 0.95), rgba(245, 241, 232, 0.45));
+  backdrop-filter: blur(2px);
+  z-index: 2;
+  padding: 0.2rem 0;
+}
+
+.tl-month {
+  margin: 0.9rem 0;
+}
+
+.tl-month h3 {
+  color: var(--tl-accent);
+  margin-bottom: 0.55rem;
+}
+
+.tl-day h4 {
+  font-size: 1rem;
+  color: var(--tl-muted);
+  margin-bottom: 0.55rem;
+}
+
+.tl-events {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.tl-event-card {
+  background: var(--tl-surface);
+  border: 1px solid #dfcfb0;
+  border-radius: 12px;
+  padding: 0.9rem;
+  box-shadow: 0 8px 18px rgba(19, 34, 56, 0.08);
+  animation: tl-rise 320ms ease both;
+}
+
+.tl-event-card:focus-visible {
+  outline: 3px solid #0c6ac5;
+  outline-offset: 2px;
+}
+
+.tl-date {
+  color: var(--tl-muted);
+  font-size: 0.88rem;
+  margin-bottom: 0.4rem;
+}
+
+.tl-links {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.tl-links a {
+  color: #0e5ea8;
+  font-weight: 700;
+}
+
+.tl-empty {
+  background: var(--tl-surface);
+  border: 1px dashed #c7b89a;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+@keyframes tl-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 992px) {
+  .timeline-page {
+    grid-template-columns: minmax(240px, 300px) 1fr;
+    align-items: start;
+    gap: 1.2rem;
+  }
+
+  .tl-sidebar {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .tl-filter-panel summary {
+    list-style: none;
+    cursor: default;
+  }
+
+  .tl-filter-panel summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .tl-events {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

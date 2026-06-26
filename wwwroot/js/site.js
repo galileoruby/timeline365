@@ -1,4 +1,12 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿document.addEventListener("DOMContentLoaded", function () {
+	var forms = document.querySelectorAll("form[data-auto-submit='true']");
 
-// Write your JavaScript code.
+	forms.forEach(function (form) {
+		var selects = form.querySelectorAll("select");
+		selects.forEach(function (item) {
+			item.addEventListener("change", function () {
+				form.submit();
+			});
+		});
+	});
+});

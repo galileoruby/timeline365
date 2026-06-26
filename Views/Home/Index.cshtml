@@ -1,8 +1,144 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model TimelineIndexViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Historical Timeline";
+    var selected = Model.Timeline.SelectedFilter;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="tl-hero">
+    <p class="tl-kicker">TimeLine365</p>
+    <h1>Events Through Time</h1>
+    <p>Explore history through a chronology-first timeline with detail grouped by year, month, and day.</p>
+</section>
+
+<section class="timeline-page" aria-label="Historical timeline">
+    <aside class="tl-sidebar" aria-label="Timeline filters">
+        <details class="tl-filter-panel" open>
+            <summary>Filter timeline</summary>
+
+            <form method="get" asp-action="Index" class="tl-filter-form" data-auto-submit="true">
+                <label for="year">Year</label>
+                <select id="year" name="year">
+                    <option value="">All years</option>
+                    @foreach (var year in Model.Timeline.FilterOptions.Years)
+                    {
+                        if (selected.Year == year)
+                        {
+                            <option value="@year" selected>@year</option>
+                        }
+                        else
+                        {
+                            <option value="@year">@year</option>
+                        }
+                    }
+                </select>
+
+                <label for="month">Month</label>
+                <select id="month" name="month" @(selected.Year.HasValue ? "" : "disabled")>
+                    <option value="">All months</option>
+                    @foreach (var month in Model.Timeline.FilterOptions.Months)
+                    {
+                        var monthLabel = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month);
+                        if (selected.Month == month)
+                        {
+                            <option value="@month" selected>@monthLabel</option>
+                        }
+                        else
+                        {
+                            <option value="@month">@monthLabel</option>
+                        }
+                    }
+                </select>
+
+                <label for="day">Day</label>
+                <select id="day" name="day" @(selected.Year.HasValue && selected.Month.HasValue ? "" : "disabled")>
+                    <option value="">All days</option>
+                    @foreach (var day in Model.Timeline.FilterOptions.Days)
+                    {
+                        if (selected.Day == day)
+                        {
+                            <option value="@day" selected>Day @day</option>
+                        }
+                        else
+                        {
+                            <option value="@day">Day @day</option>
+                        }
+                    }
+                </select>
+
+                <div class="tl-filter-actions">
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                    <a class="btn btn-outline-secondary" asp-action="Index">Clear</a>
+                </div>
+            </form>
+        </details>
+    </aside>
+
+    <div class="tl-content">
+        <p class="tl-result-count">@Model.Timeline.TotalEvents events found</p>
+
+        @if (Model.Timeline.Timeline.Count == 0)
+        {
+            <section class="tl-empty" aria-live="polite">
+                <h2>No events for this filter</h2>
+                <p>Try clearing one level of filter to broaden results.</p>
+            </section>
+        }
+        else
+        {
+            foreach (var yearGroup in Model.Timeline.Timeline)
+            {
+                <section class="tl-year" id="year-@yearGroup.Year" aria-label="Year @yearGroup.Year">
+                    <header>
+                        <h2>@yearGroup.Year</h2>
+                    </header>
+
+                    @foreach (var monthGroup in yearGroup.Months)
+                    {
+                        <section class="tl-month" aria-label="@monthGroup.Label">
+                            <h3>@monthGroup.Label</h3>
+
+                            @foreach (var dayGroup in monthGroup.Days)
+                            {
+                                <section class="tl-day" aria-label="@dayGroup.Label">
+                                    @if (dayGroup.Day.HasValue)
+                                    {
+                                        <h4>@dayGroup.Label</h4>
+                                    }
+
+                                    <div class="tl-events">
+                                        @foreach (var item in dayGroup.Events)
+                                        {
+                                            <article class="tl-event-card" tabindex="0">
+                                                <p class="tl-date">@item.DateLabel</p>
+                                                <h5>@item.Title</h5>
+                                                @if (!string.IsNullOrWhiteSpace(item.Description))
+                                                {
+                                                    <p>@item.Description</p>
+                                                }
+
+                                                @if (!string.IsNullOrWhiteSpace(item.ReferenceUrl) || !string.IsNullOrWhiteSpace(item.MediaUrl))
+                                                {
+                                                    <div class="tl-links">
+                                                        @if (!string.IsNullOrWhiteSpace(item.ReferenceUrl))
+                                                        {
+                                                            <a href="@item.ReferenceUrl" target="_blank" rel="noopener noreferrer">Reference</a>
+                                                        }
+                                                        @if (!string.IsNullOrWhiteSpace(item.MediaUrl))
+                                                        {
+                                                            <a href="@item.MediaUrl" target="_blank" rel="noopener noreferrer">Media</a>
+                                                        }
+                                                    </div>
+                                                }
+                                            </article>
+                                        }
+                                    </div>
+                                </section>
+                            }
+                        </section>
+                    }
+                </section>
+            }
+        }
+    </div>
+</section>
