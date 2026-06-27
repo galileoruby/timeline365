@@ -36,6 +36,77 @@ public sealed class TimelineService : ITimelineService
         return new TimelinePageResponse(normalized, options, timeline, events.Count);
     }
 
+    public Task<IReadOnlyList<TimelineEvent>> GetEventsAsync(CancellationToken cancellationToken)
+    {
+        return _repository.GetAllAsync(cancellationToken);
+    }
+
+    public Task<TimelineEvent?> GetEventAsync(long id, CancellationToken cancellationToken)
+    {
+        return _repository.GetByIdAsync(id, cancellationToken);
+    }
+
+    public async Task<long> CreateEventAsync(CreateTimelineEventRequest request, CancellationToken cancellationToken)
+    {
+        var validated = ValidateEvent(
+            0,
+            request.Year,
+            request.Month,
+            request.Day,
+            request.Title,
+            request.Description,
+            request.MediaUrl,
+            request.ReferenceUrl,
+            request.SortOrder);
+
+        var normalizedRequest = new CreateTimelineEventRequest(
+            validated.Year,
+            validated.Month,
+            validated.Day,
+            validated.Title,
+            validated.Description,
+            validated.MediaUrl,
+            validated.ReferenceUrl,
+            validated.SortOrder);
+
+        return await _repository.CreateAsync(normalizedRequest, cancellationToken);
+    }
+
+    public async Task<bool> UpdateEventAsync(UpdateTimelineEventRequest request, CancellationToken cancellationToken)
+    {
+        var validated = ValidateEvent(
+            request.Id,
+            request.Year,
+            request.Month,
+            request.Day,
+            request.Title,
+            request.Description,
+            request.MediaUrl,
+            request.ReferenceUrl,   
+            request.SortOrder);
+
+        var normalizedRequest = new UpdateTimelineEventRequest(
+            validated.Id,
+            validated.Year,
+            validated.Month,
+            validated.Day,
+            validated.Title,
+            validated.Description,
+            validated.MediaUrl,
+            validated.ReferenceUrl,
+            validated.SortOrder);
+
+        return await _repository.UpdateAsync(normalizedRequest, cancellationToken);
+    }
+
+    public Task<bool> DeleteEventAsync(long id, CancellationToken cancellationToken)
+    {
+        if (id <= 0)
+        {
+            return Task.FromResult(false);
+        }
+        return _repository.DeleteAsync(id, cancellationToken);
+    }
     private static TimelineFilterRequest NormalizeFilter(TimelineFilterRequest request)
     {
         int? year = request.Year;
@@ -70,10 +141,34 @@ public sealed class TimelineService : ITimelineService
         return new TimelineFilterRequest(year, month, day);
     }
 
+    private static TimelineEvent ValidateEvent(
+        long id,
+        int year,
+        int? month,
+        int? day,
+        string title,
+        string? description,
+        string? mediaUrl,
+        string? referenceUrl,
+        int sortOrder)
+    {
+        return new TimelineEvent(
+            id,
+            year,
+            month,
+            day,
+            title,
+            description,
+            mediaUrl,
+            referenceUrl,
+            sortOrder);
+    }
+
     private static IReadOnlyList<TimelineYearGroupResponse> BuildTimeline(IReadOnlyList<TimelineEvent> events)
     {
         return events
             .GroupBy(x => x.Year)
+            .OrderByDescending(x => x.Key)
             .Select(yearGroup => new TimelineYearGroupResponse(
                 yearGroup.Key,
                 yearGroup
@@ -93,7 +188,6 @@ public sealed class TimelineService : ITimelineService
                     .ToList()))
             .ToList();
     }
-
     private static TimelineEventResponse MapEvent(TimelineEvent item)
     {
         var dateLabel = item.Day.HasValue

@@ -1,0 +1,20 @@
+@model TimelineEventFormViewModel
+@{
+    ViewData["Title"] = "Edit Timeline Event";
+}
+
+<h1>Edit Timeline Event</h1>
+
+<form asp-action="Edit" method="post">
+    <partial name="_Form" model="Model" />
+
+    <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to details</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back to list</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

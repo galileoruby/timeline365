@@ -245,3 +245,46 @@ h5,
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+
+/*Cards fancy movement*/
+.tl-event-card {
+    background: var(--tl-surface);
+    border: 1px solid #dfcfb0;
+    border-radius: 12px;
+    padding: 0.9rem;
+    box-shadow: 0 8px 18px rgba(19, 34, 56, 0.08);
+    animation: tl-rise 320ms ease both;
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+    .tl-event-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 16px 28px rgba(19, 34, 56, 0.14);
+        border-color: var(--tl-accent);
+    }
+
+        .tl-event-card:hover .tl-date,
+        .tl-event-card:hover h5 {
+            color: var(--tl-accent);
+        }
+
+    .tl-event-card:focus-visible {
+        outline: 3px solid #0c6ac5;
+        outline-offset: 2px;
+        transform: translateY(-4px) scale(1.01);
+    }
+
+
+@media (prefers-reduced-motion: reduce) {
+    .tl-event-card {
+        transition: none;
+        animation: none;
+    }
+
+        .tl-event-card:hover,
+        .tl-event-card:focus-visible {
+            transform: none;
+        }
+}

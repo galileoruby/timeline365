@@ -1,0 +1,55 @@
+@model TimelineEventFormViewModel
+
+<input asp-for="Id" type="hidden" />
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="Year" class="form-label"></label>
+        <input asp-for="Year" class="form-control" />
+        <span asp-validation-for="Year" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Month" class="form-label"></label>
+        <input asp-for="Month" class="form-control" />
+        <span asp-validation-for="Month" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Day" class="form-label"></label>
+        <input asp-for="Day" class="form-control" />
+        <span asp-validation-for="Day" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="MediaUrl" class="form-label"></label>
+        <input asp-for="MediaUrl" class="form-control" />
+        <span asp-validation-for="MediaUrl" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="ReferenceUrl" class="form-label"></label>
+        <input asp-for="ReferenceUrl" class="form-control" />
+        <span asp-validation-for="ReferenceUrl" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="SortOrder" class="form-label"></label>
+        <input asp-for="SortOrder" class="form-control" />
+        <span asp-validation-for="SortOrder" class="text-danger"></span>
+    </div>
+</div>

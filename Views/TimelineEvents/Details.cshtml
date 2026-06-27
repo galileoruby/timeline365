@@ -1,0 +1,35 @@
+@model TimelineEventDetailsViewModel
+@{
+    ViewData["Title"] = "Timeline Event Details";
+}
+
+<h1>Timeline Event Details</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Id</dt>
+    <dd class="col-sm-9">@Model.Id</dd>
+
+    <dt class="col-sm-3">Date</dt>
+    <dd class="col-sm-9">@Model.DateLabel</dd>
+
+    <dt class="col-sm-3">Title</dt>
+    <dd class="col-sm-9">@Model.Title</dd>
+
+    <dt class="col-sm-3">Description</dt>
+    <dd class="col-sm-9">@Model.Description</dd>
+
+    <dt class="col-sm-3">Media URL</dt>
+    <dd class="col-sm-9">@Model.MediaUrl</dd>
+
+    <dt class="col-sm-3">Reference URL</dt>
+    <dd class="col-sm-9">@Model.ReferenceUrl</dd>
+
+    <dt class="col-sm-3">Sort order</dt>
+    <dd class="col-sm-9">@Model.SortOrder</dd>
+</dl>
+
+<div class="d-flex gap-2">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Delete</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to list</a>
+</div>

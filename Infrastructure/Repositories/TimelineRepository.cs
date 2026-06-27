@@ -70,17 +70,119 @@ ORDER BY
             cancellationToken: cancellationToken));
 
         return rows
-            .Select(row => new TimelineEvent(
-                row.Id,
-                row.Year,
-                row.Month,
-                row.Day,
-                row.Title,
-                row.Description,
-                row.MediaUrl,
-                row.ReferenceUrl,
-                row.SortOrder))
+            .Select(MapRow)
             .ToList();
+    }
+
+    public async Task<IReadOnlyList<TimelineEvent>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        const string sql = @"
+SELECT
+    Id,
+    Year,
+    Month,
+    Day,
+    Title,
+    Description,
+    MediaUrl,
+    ReferenceUrl,
+    SortOrder
+FROM TimelineEvents
+ORDER BY
+    Year ASC,
+    CASE WHEN Month IS NULL THEN 0 ELSE 1 END ASC,
+    Month ASC,
+    CASE WHEN Day IS NULL THEN 0 ELSE 1 END ASC,
+    Day ASC,
+    SortOrder ASC,
+    Id ASC;";
+
+        await using var connection = (Microsoft.Data.Sqlite.SqliteConnection)await _connectionFactory.CreateOpenConnectionAsync(cancellationToken);
+        var rows = await connection.QueryAsync<TimelineEventRow>(new CommandDefinition(
+            sql,
+            cancellationToken: cancellationToken));
+
+        return rows
+            .Select(MapRow)
+            .ToList();
+    }
+
+    public async Task<TimelineEvent?> GetByIdAsync(long id, CancellationToken cancellationToken)
+    {
+        const string sql = @"
+SELECT
+    Id,
+    Year,
+    Month,
+    Day,
+    Title,
+    Description,
+    MediaUrl,
+    ReferenceUrl,
+    SortOrder
+FROM TimelineEvents
+WHERE Id = @Id;";
+
+        await using var connection = (Microsoft.Data.Sqlite.SqliteConnection)await _connectionFactory.CreateOpenConnectionAsync(cancellationToken);
+        var row = await connection.QuerySingleOrDefaultAsync<TimelineEventRow>(new CommandDefinition(
+            sql,
+            new { Id = id },
+            cancellationToken: cancellationToken));
+
+        return row is null ? null : MapRow(row);
+    }
+
+    public async Task<long> CreateAsync(CreateTimelineEventRequest request, CancellationToken cancellationToken)
+    {
+        const string sql = @"
+INSERT INTO TimelineEvents (Year, Month, Day, Title, Description, MediaUrl, ReferenceUrl, SortOrder)
+VALUES (@Year, @Month, @Day, @Title, @Description, @MediaUrl, @ReferenceUrl, @SortOrder)
+RETURNING Id;";
+
+        await using var connection = (Microsoft.Data.Sqlite.SqliteConnection)await _connectionFactory.CreateOpenConnectionAsync(cancellationToken);
+        return await connection.QuerySingleAsync<long>(new CommandDefinition(
+            sql,
+            request,
+            cancellationToken: cancellationToken));
+    }
+
+    public async Task<bool> UpdateAsync(UpdateTimelineEventRequest request, CancellationToken cancellationToken)
+    {
+        const string sql = @"
+UPDATE TimelineEvents
+SET
+    Year = @Year,
+    Month = @Month,
+    Day = @Day,
+    Title = @Title,
+    Description = @Description,
+    MediaUrl = @MediaUrl,
+    ReferenceUrl = @ReferenceUrl,
+    SortOrder = @SortOrder
+WHERE Id = @Id;";
+
+        await using var connection = (Microsoft.Data.Sqlite.SqliteConnection)await _connectionFactory.CreateOpenConnectionAsync(cancellationToken);
+        var affectedRows = await connection.ExecuteAsync(new CommandDefinition(
+            sql,
+            request,
+            cancellationToken: cancellationToken));
+
+        return affectedRows > 0;
+    }
+
+    public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken)
+    {
+        const string sql = @"
+DELETE FROM TimelineEvents
+WHERE Id = @Id;";
+
+        await using var connection = (Microsoft.Data.Sqlite.SqliteConnection)await _connectionFactory.CreateOpenConnectionAsync(cancellationToken);
+        var affectedRows = await connection.ExecuteAsync(new CommandDefinition(
+            sql,
+            new { Id = id },
+            cancellationToken: cancellationToken));
+
+        return affectedRows > 0;
     }
 
     public async Task<IReadOnlyList<int>> GetAvailableYearsAsync(CancellationToken cancellationToken)
@@ -121,24 +223,30 @@ ORDER BY Day ASC;";
         return days.ToList();
     }
 
+    private static TimelineEvent MapRow(TimelineEventRow row)
+    {
+        return new TimelineEvent(
+            row.Id,
+            row.Year,
+            row.Month,
+            row.Day,
+            row.Title,
+            row.Description,
+            row.MediaUrl,
+            row.ReferenceUrl,
+            row.SortOrder);
+    }
+
     private sealed class TimelineEventRow
     {
         public long Id { get; init; }
-
         public int Year { get; init; }
-
         public int? Month { get; init; }
-
         public int? Day { get; init; }
-
         public string Title { get; init; } = string.Empty;
-
         public string? Description { get; init; }
-
         public string? MediaUrl { get; init; }
-
         public string? ReferenceUrl { get; init; }
-
         public int SortOrder { get; init; }
     }
 }
